@@ -176,11 +176,79 @@
                 </table>
             </div>
             <h3>Part 4: Edge flip</h3>
-            In this part, we can know how to flip the edge. We will use graphs we make to show how to do that instead of using lots of words to.
+            In this part, we can know how to flip the edge. We will use graphs we make to show.
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part4 words.png" width="400px" />
+                            <figcaption>Before we flip.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part4 words2.png" width="400px" />
+                            <figcaption>After we flip.</figcaption>
+                        </td>
+                    </tr>
 
+                </table>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part4 words3.png" width="500px" />
+                            <figcaption>Lecture explaination.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            And our implementation follows the graph. It is a long and buggy work. Because we also need to track on all new data and make sure they don't leak to the next flip operation. We spend lots of time on this part and next part.
+            We have bugs that we don't track the value of twin edge and flip the wrong edge even it may look right when you flip it for one time. We have to debug it for a long time. And we also need to check the boundary.
+            Keep track on the address of the edges and the vertex is useful for debugging. When we encounter some wierd bugs, we can check the address and the value of the next or twin to make sure we are flipping in a right way.
+            Or we also check the debugger for all steps we do and check one by one to see where is the error and we can try to find out what causes it. We use these methods when we find out the flipping just looks right but the value in it is wrong.
+            We do flip the edge but it is not correct in all value. An when we try to flip back, it becomes a mess. And we check value one by one to find the error. We miss the twin edge update. So we bring the old twin to our new flip.
+            <p>Here is images for implementations.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part4.1.png" width="400px" />
+                            <figcaption>Before we flip.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part4.2.png" width="400px" />
+                            <figcaption>After we randommly flip.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <h3>Part 5: Edge split</h3>
-            ....
+            This part is pretty same to the previous one but different operation. We also draw our own graphs to show the operation.
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part5 words.png" width="400px" />
+                            <figcaption>Before we flip.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part5 words2.png" width="400px" />
+                            <figcaption>After we flip.</figcaption>
+                        </td>
+                    </tr>
 
+                </table>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part5 words3.png" width="500px" />
+                            <figcaption>Lecture explaination.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <h3>Part 6: Loop subdivision for mesh upsampling</h3>
             ....
 
