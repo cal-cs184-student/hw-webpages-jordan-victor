@@ -249,6 +249,8 @@
                     </tr>
                 </table>
             </div>
+            <p>Debugging experience</p>
+            In fact, there was no problem when I completed part 5 for the first time, and I split the polygon smoothly. However, the real nightmare came after completing part 6: First, I found that I could only upsample once, and the second upsampling would crash due to a segment fault, so I asked TA for help. Finally, we added print statements to each module in part 6, and finally confirmed that the problem was in part 5, and that it forgot to update the position of a vertex and its halfedge. Later, after solving the previous bug, I found that the upsampling of the cube did not match the correct image, and there were many collapses, so I went to ed again to look for similar situations, and finally found that part 5 forgot to update the halfedge of the edge. After two painful debugs, I successfully completed part 5.
             <p>Here is images for implementations.</p>
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <table style="width: 100%; text-align: center; border-collapse: collapse;">
