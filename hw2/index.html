@@ -229,11 +229,11 @@
                     <tr>
                         <td style="text-align: center;">
                             <img src="part5 words.png" width="400px" />
-                            <figcaption>Before we flip.</figcaption>
+                            <figcaption>Before we split.</figcaption>
                         </td>
                         <td style="text-align: center;">
                             <img src="part5 words2.png" width="400px" />
-                            <figcaption>After we flip.</figcaption>
+                            <figcaption>After we split.</figcaption>
                         </td>
                     </tr>
 
@@ -249,23 +249,84 @@
                     </tr>
                 </table>
             </div>
+            <p>Here is images for implementations.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part4.1.png" width="400px" />
+                            <figcaption>Before we split.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part5.1.png" width="400px" />
+                            <figcaption>After we split.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part4.1.png" width="400px" />
+                            <figcaption>Before we split and flip.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part5.2.png" width="400px" />
+                            <figcaption>After we split and flip.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <h3>Part 6: Loop subdivision for mesh upsampling</h3>
-            ....
-
-            <h2>(Optional) Section III: Potential Extra Credit - Art Competition: Model something Creative</h2>
-            ....
-
-            <h2>Additional Notes (please remove)</h2>
-            <ul>
-                <li>You can also add code if you'd like as so: <code>code code code</code></li>
-                <li>
-                    If you'd like to add math equations,
-                    <ul>
-                        <li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-                        <li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-                    </ul>
-                </li>
-            </ul>
+            In this part, we will wrap what we have and do some sampling too. Loop subdivision follows two main steps: 1. Edge Split (Triangle Subdivision): Each triangle is divided into four smaller triangles by adding a new vertex at the midpoint of each edge. 2. Vertex Position Update (Smoothing Step): The newly added vertices are computed using a weighted average of their neighboring vertices.
+            The original vertices are also updated to ensure smoothness. We have a more detailed step: Update original vertex positions, Compute new vertex positions for edges, Split every edge in the original mesh, Flip new edges connecting an old and new vertex, Copy new positions to final vertex positions.
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part6 words.png" width="500px" />
+                            <figcaption>Lecture explaination.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <p>Notes for observations and pre-process.</p>
+            This results in a smoother surface by averaging the positions of neighboring vertices and subdividing the edges.
+            Sharp corners become less sharp. The sharpness gets reduced, and the corner softens as additional vertices are added. This happens because the new vertices are averaged with the surrounding geometry during the subdivision process.
+            Subdivision causes the sharp corner to smooth out progressively more with each iteration.
+            We think edge splitting before applying subdivision can help maintain sharpness. By manually splitting certain edges, the sharpness is retained because the subdivision will not influence those parts as much.
+            As wse subdivide the cube repeatedly, it can become slightly asymmetric. This happens because the vertices are averaged in such a way that the geometry can slightly deviate from its original grid structure, and any initial imperfections in the cube's vertices get accentuated as they are subdivided.
+            If we want symmetry for the cube, edge splitting involves adding vertices along edges, which may help maintain symmetry during subdivision. Because this may help to maintain the original symmetry. Just prevent the edge moves to far away from the original posotions.
+            <p>Debugging experience</p>
+            We also have lots of issues here. Part 6 contains part 4 and part 5. So if we have to debug part 6, we have to debug part 4 and part 5 first. Before we have some dent faces on our cube. We think it is caused by split or maybe flip. And we went to OH twice to solve this single issue. And it is exhusting to solve this bug. Because we don't know what caued it. Even it is just 2 lines code bug. It is hard to find as we want. So we have to debug carefully and check much points as we can to find the bug. As we write above, we need to check each value of each split and flip. And you will see what is happenning in your code. We find out that we miss to update a next vertex of a halfedge in only one line.
+            <p>Here is images for implementations.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part6.1.png" width="400px" />
+                            <figcaption>Level1.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part6.2.png" width="400px" />
+                            <figcaption>Level2.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part6.3.png" width="400px" />
+                            <figcaption>Level3.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part6.4.png" width="400px" />
+                            <figcaption>Level4.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part6.5.png" width="400px" />
+                            <figcaption>Level5.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
 	</body>
 </html>
