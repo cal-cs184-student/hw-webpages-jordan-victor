@@ -53,8 +53,21 @@
             <h2>Section I: Bezier Curves and Surfaces</h2>
             In this section, we will implement Bezier Curves and Surfaces.
             <h3>Part 1: Bezier curves with 1D de Casteljau subdivision</h3>
-            Bezier curves are used for smooth modeling. It is a recursive algorithm to subdivide control points and finally get a smooth curve by their subdivisions. So we can have a "smmoth" curve as we want. In this 1D subdivision, we are just set several control points and get a smooth curve between them. We can also move control points to get a different smooth. It is not actually pretty hard to implement this. We create a recursive function to calculate the new control points(subdivisions) and do it again and again until we only have two subdivisions. And we can have a smooth curve.
-
+            Bezier curves are used for smooth modeling. It is a recursive algorithm to subdivide control points and finally get a smooth curve by their subdivisions. So we can have a "smmoth" curve as we want. In this 1D subdivision, we are just set several control points and get a smooth curve between them. We can also move control points to get a different smooth. The math equation for recursive logistics and the graph represents the process are below. It is not actually pretty hard to implement this. We create a recursive function to calculate the new control points(subdivisions) and do it again and again until we only have two subdivisions. And we can have a smooth curve.
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part1 words.png" width="400px" />
+                            <figcaption>Algorithm graph.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+                <ul>
+                    <li>Math equation: \( B(t) = (1 - t) P_0 + t P_1 \)</li>
+                    <li>where \( t \) ranges from 0 to 1.</li>
+                </ul>
+            </div>
             <p>Here is our <b>6</b> control points.</p>
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -102,7 +115,21 @@
             </div>
 
             <h3>Part 2: Bezier surfaces with separable 1D de Casteljau</h3>
-            In this part, we transfer 1D Bezier curves to 2D surfaces. A Bezier surface is constructed by many Bezier cureves on it. In lecture, we have two ways to construct the surface. One is using separations of Bezier curves. And the other one is using algebraic formula to complete. I don't know how to implement that math stuff in codes. So we use the first way. We still have control points on the surface. But each points are also like a cross control points of Bezier curves. It is like a grid formed by many Bezier curves. We move these control points to generate our smooth surface. Coding part is actually also a recursive function using 1D Bezier curve we have before. We just try to combine 1D into 2D to generate that patch for the control points.
+            In this part, we transfer 1D Bezier curves to 2D surfaces. A Bezier surface is constructed by many Bezier cureves on it. The B¨¦zier surface is controlled by a grid of control points instead of just a set of points like in B¨¦zier curves. Each control point contributes to the shape based on its position and weight. By varying u and v, the surface smoothly interpolates between control points. In lecture, we have two ways to construct the surface. One is using separations of Bezier curves. And the other one is using algebraic formula to complete. We use the first way. We still have control points on the surface. But each points are also like a cross control points of Bezier curves. It is like a grid formed by many Bezier curves. We move these control points to generate our smooth surface. Coding part is actually also a recursive function using 1D Bezier curve we have before. We just try to combine 1D into 2D to generate that patch for the control points.
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part2 words.png" width="400px" />
+                            <figcaption>Algorithm graph.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part2 words2.png" width="400px" />
+                            <figcaption>Math equation.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <p>Here is images for the surface.</p>
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -121,8 +148,19 @@
             <h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
             <h3>Part 3: Area-weighted vertex normals</h3>
-            For this implementation for vertex normals, we need to calculate the normals for each vertex. First for all, we need all the data that vertex has: its next, its next next(so we have the tri data). We know all the edges around it and we calculate the normal units for it. And we return it. But we might want to check the boundary and !halfedge to make sure we don't get some wired normal units.
-            <p>Here is images.</p>
+            A vertex normal is a unit vector assigned to a vertex in a 3D model, representing the average direction the surface is facing at that point. It is commonly used in shading and rendering to achieve smooth lighting effects, particularly in Phong shading and Gouraud shading.
+            For this implementation for vertex normals, We need to calculate face normals (each polygon¡¯s normal), accumulate face normals at each vertex, and normalize vertex normals (to ensure they remain unit vectors). First for all, we need all the data that vertex has: its next, its next next(so we have the tri data). We know all the edges around it and we calculate the normal units for it. And we return it. But we might want to check the boundary and !halfedge to make sure we don't get some wired normal units.
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part3 words.png" width="400px" />
+                            <figcaption>Shading graph from wikipedia.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <p>Here is images for implementations.</p>
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <table style="width: 100%; text-align: center; border-collapse: collapse;">
                     <tr>
