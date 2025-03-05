@@ -108,8 +108,12 @@
                 <table style="width: 100%; text-align: center; border-collapse: collapse;">
                     <tr>
                         <td style="text-align: center;">
-                            <img src="part2.1.png" width="400px" />
+                            <img src="part2.2.png" width="400px" />
                             <figcaption>Generated teapot.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part2.1.png" width="400px" />
+                            <figcaption>Using bez file.</figcaption>
                         </td>
                     </tr>
                 </table>
@@ -117,8 +121,22 @@
             <h2>Section II: Triangle Meshes and Half-Edge Data Structure</h2>
 
             <h3>Part 3: Area-weighted vertex normals</h3>
-            ....
-
+            For this implementation for vertex normals, we need to calculate the normals for each vertex. First for all, we need all the data that vertex has: its next, its next next(so we have the tri data). We know all the edges around it and we calculate the normal units for it. And we return it. But we might want to check the boundary and !halfedge to make sure we don't get some wired normal units.
+            <p>Here is images.</p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="part3.1.png" width="400px" />
+                            <figcaption>Original teapot.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="part3.2.png" width="400px" />
+                            <figcaption>Shading teapot.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
             <h3>Part 4: Edge flip</h3>
             ....
 
