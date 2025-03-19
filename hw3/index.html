@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 	<head>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -27,80 +27,148 @@
 	</head>
 	<body>
 		<div class="container">
-		<h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
-		<div style="text-align: center;">Names: </div>
+			<h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
+			<div style="text-align: center;">Names: </div>
 
-		<br>
+			<br>
 
-		Link to webpage: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-		Link to GitHub repository: (TODO) <a href="https://cs184.eecs.berkeley.edu/sp25">cs184.eecs.berkeley.edu/sp25</a>
-		
-		<figure>
-			<img src="cornell.png" alt="Cornell Boxes with Bunnies" style="width:70%"/>
-			<figcaption>You can add images with captions!</figcaption>
-		</figure>
+			Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-jordan-victor/">https://cal-cs184-student.github.io/hw-webpages-jordan-victor/</a>
+			Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw3-for-the-emperor">https://github.com/cal-cs184-student/sp25-hw3-for-the-emperor</a>
 
-		<!--
-		We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
-		-->
+			<figure>
+				<img src="cornell.png" alt="Cornell Boxes with Bunnies" style="width:70%" />
+				<figcaption>It is a cornell</figcaption>
+			</figure>
 
-		<h2>Overview</h2>
-		Give a high-level overview of what you implemented in this homework. Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.
+			<!--
+	We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
+	-->
 
-		<h2>Part 1: Ray Generation and Scene Intersection</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			<h2>Overview</h2>
 
-		<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-		<div style="display: flex; flex-direction: column; align-items: center;">
-			<table style="width: 100%; text-align: center; border-collapse: collapse;">
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			  <tr>
-				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-				<td style="text-align: center;">
-				  <img src="cornell.png" width="400px"/>
-				  <figcaption>Caption goes here.</figcaption>
-				</td>
-			  </tr>
-			</table>
-		</div>
-		
-		<h2>Part 2: Bounding Volume Hierarchy</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 
-		<h2>Part 3: Direct Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			<h2>Part 1: Ray Generation and Scene Intersection</h2>
+			Ray generation is the first step in the rendering pipeline where rays are cast from the camera into the scene.
+			Each ray corresponds to a pixel on the screen. The direction of the ray is determined by the camera's position, the pixel's position on the screen, and the field of view.
+			The ray is defined by its origin (usually the camera's position) and its direction. Once rays are generated, the next step is to determine if they intersect with any objects (primitives) in the scene.
+			This is done by testing each ray against all the primitives in the scene. The goal is to find the closest intersection point along the ray, which will determine the color of the pixel.
 
-		<h2>Part 4: Global Illumination</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			The triangle intersection algorithm implemented in our code determines whether a ray intersects with a triangle using the Möller-Trumbore method.
+			It calculates the barycentric coordinates and the distance along the ray to the intersection point, ensuring that the intersection is valid and within the ray's bounds.
+			If an intersection is found, the relevant data is stored in the Intersection object for further processing in the rendering pipeline.
+			In has_intersection, the function checks if a ray intersects with a triangle by computing edge vectors (E1, E2) and the vector from the triangle's first vertex to the ray's origin (S).
+			It then calculates cross products (S1, S2) and uses them to determine the barycentric coordinates (b1, b2, b0) and the distance t along the ray to the intersection point.
+			The function returns true if the intersection is valid, meaning t lies within the ray's bounds (r.min_t to r.max_t) and the barycentric coordinates are within the range [0, 1].
+			The intersect function builds on this by performing the same calculations but also records the intersection details in an Intersection object if a valid intersection is found.
+			It updates the object with the distance t, the triangle primitive, the BSDF (material properties), and the interpolated normal at the intersection point, which is computed as a weighted sum of the triangle's vertex normals (n1, n2, n3) using the barycentric coordinates.
+			Both functions ensure ray-triangle intersection testing, with intersect providing additional data for shading and rendering purposes.
 
-		<h2>Part 5: Adaptive Sampling</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+			<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="cornell.png" width="400px" />
+							<figcaption>Caption goes here.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="cornell.png" width="400px" />
+							<figcaption>Caption goes here.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="cornell.png" width="400px" />
+							<figcaption>Caption goes here.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="cornell.png" width="400px" />
+							<figcaption>Caption goes here.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 
-		<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
-		Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		
-		<h2>Additional Notes (please remove)</h2>
-		<ul>
-			<li>You can also add code if you'd like as so: <code>code code code</code></li>
-			<li>If you'd like to add math equations, 
-				<ul>
-					<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-					<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-				</ul>
-			</li>
-		</ul>
+			<h2>Part 2: Bounding Volume Hierarchy</h2>
+			The Bounding Volume Hierarchy (BVH) construction algorithm recursively partitions a set of primitives into a tree structure to accelerate ray-primitive intersection tests.
+			The algorithm begins by computing the bounding box (bbox) of all primitives in the current node and calculating the centroid of these bounding boxes (mean).
+			If the number of primitives (n) is less than or equal to the max_leaf_size, the node is marked as a leaf, storing the primitives and their bounding box.
+			Otherwise, the algorithm splits the primitives into two groups based on a heuristic. The heuristic chosen here is to split along the longest axis of the bounding box (x, y, or z) to ensure balanced partitions.
+			The primitives are divided into two subsets: those with centroids less than the mean along the chosen axis go to the left child, and the rest go to the right child.
+			This process repeats recursively for each child node until all nodes are either leaves or satisfy the splitting condition.
+
+			<p>The intersection functions (has_intersection and intersect) traverse the BVH to efficiently determine if a ray intersects any primitive.
+			Starting at the root, the ray is tested against the node's bounding box. If there is no intersection, the traversal stops. For leaf nodes, the ray is tested against all primitives in the node.
+			For internal nodes, the traversal continues recursively into the left and right children. The has_intersection function short-circuits as soon as it finds any intersection, while intersect updates the closest intersection point in the Intersection object.
+			This hierarchical structure significantly reduces the number of intersection tests by culling large groups of primitives early in the traversal.</p>
+
+
+			<h2>Part 3: Direct Illumination</h2>
+			Hemisphere Sampling uniformly samples directions in a local hemisphere around the intersection point, using the BSDF’s sample_f to generate random incoming directions.
+			For each sample, it transforms the direction to world space, casts a ray, and accumulates light contribution if the ray hits an emissive object, weighted by the BRDF, cosine term, and PDF.
+			The hemisphere sampling implementation constructs a local coordinate system aligned with the surface normal, samples directions uniformly via the BSDF’s sample_f (returning local-space directions and PDFs), transforms them to world space, and casts rays to check for emissive intersections, accumulating light as \((BRDF * emission * cosθ) / (pdf * num_samples)\) with no explicit light targeting.
+
+			<p>Importance Sampling explicitly samples toward lights via sample_L, generating directions and PDFs from light sources.
+			It checks visibility by casting rays clamped to the light’s distance, then computes BRDF and accumulates contributions.
+			Importance sampling reduces noise by focusing samples on lights but requires correct coordinate handling and PDF weighting.
+			The importance sampling method iterates lights directly, samples world-space directions toward lights via sample_L (returning radiance, distance, and PDF), casts visibility rays clamped to the light’s distance, and accumulates \((BRDF * L * cosθ) / pdf \) but fails to transform w_in to local space before BRDF evaluation and calculates averages by dividing the total L_out by sample_num after per-light accumulation instead of averaging per-light contributions first.
+			Both methods offset rays by EPS_F to avoid self-intersection, but hemisphere sampling implicitly tests all emissive surfaces via random walks, while importance sampling explicitly queries lights but mishandles coordinate spaces and PDF weighting, introducing energy conservation errors.</p>
+
+			<h2>Part 4: Global Illumination</h2>
+			The indirect lighting is handled in at_least_one_bounce_radiance, which recursively traces rays to simulate global illumination:
+			Russian Roulette Termination: A 35% probability (russian_roulette = 1 - 0.35) of terminating the ray early to control computation cost.
+			Recursive Sampling: After computing the first bounce (direct lighting), the function samples a new direction via bsdf->sample_f, casts a ray, and accumulates indirect illumination from subsequent bounces.
+			Accumulation: If isAccumBounces is true, indirect contributions are weighted by brdf * cos_theta / (pdf * russian_roulette) to account for path termination.
+			Global Illumination (Direct + Indirect)
+			Rendered Image (1024 samples/pixel):
+			Direct illumination produces sharp shadows and lit surfaces.
+			Indirect illumination adds subtle color bleeding (e.g., red tint from a nearby wall) and softens shadows.
+			Combined, the image shows realistic light diffusion and complex interactions (see CBbunny.dae with area light).
+			Direct vs. Indirect Illumination (1024 samples/pixel)
+			Direct Only:
+			Sharp shadows, no color bleeding.
+			Limited to light paths with exactly one bounce.
+			Indirect Only:
+			Dimmer, diffuse lighting from bounced rays.
+			Captures effects like light leaking into corners or color transfer between surfaces.
+			Per-Bounce Analysis (CBbunny.dae, -m 0-5, isAccumBounces=false)
+			Bounce 0: Only emission (light sources).
+			Bounce 1: Direct lighting (hard shadows).
+			Bounce 2: First indirect bounce (soft shadows, faint color bleeding).
+			Bounce 3: Secondary indirect bounces (smoother gradients, visible color diffusion).
+			Bounce 4-5: Subtle refinements in dark areas.
+			Comparison to Rasterization: Unlike rasterization (which only computes direct lighting), path tracing captures multi-bounce effects like soft shadows and color bleeding, adding realism.
+			Accumulated vs. Unaccumulated Bounces (CBbunny.dae)
+			Accumulated: Each bounce adds to the previous, resulting in a brighter, smoother image.
+			Unaccumulated: Shows isolated contributions per bounce (e.g., bounce 2 highlights indirect paths missing in rasterization).
+			Russian Roulette Rendering (-m 100)
+			Terminates long paths probabilistically, reducing computation.
+			At 1024 samples, noise is minimal, but very high max depth (e.g., 100) has negligible visual impact compared to -m 5.
+			Sample Rate Comparison (1, 2, 4, 8, 16, 64, 1024 samples, 4 light rays)
+			1-16 samples: Extremely noisy, unusable.
+			64 samples: Noise reduced, but splotchy.
+			1024 samples: Near-convergence, smooth gradients.
+			Key Insight: Higher samples disproportionately reduce noise in indirect lighting due to Monte Carlo averaging.
+
+
+
+			<h2>Part 5: Adaptive Sampling</h2>
+
+
+			<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
+
+
+			<h2>Additional Notes (please remove)</h2>
+			<ul>
+				<li>You can also add code if you'd like as so: <code>code code code</code></li>
+				<li>
+					If you'd like to add math equations,
+					<ul>
+						<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
+						<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
+					</ul>
+				</li>
+			</ul>
 		</div>
 	</body>
 </html>
