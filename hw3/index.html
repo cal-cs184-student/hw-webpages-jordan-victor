@@ -28,7 +28,7 @@
 	<body>
 		<div class="container">
 			<h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
-			<div style="text-align: center;">Names: </div>
+			<div style="text-align: center;">Names: Jinglun Zhang and Feiyang Liu</div>
 
 			<br>
 
@@ -36,8 +36,8 @@
 			Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw3-for-the-emperor">https://github.com/cal-cs184-student/sp25-hw3-for-the-emperor</a>
 
 			<figure>
-				<img src="cornell.png" alt="Cornell Boxes with Bunnies" style="width:70%" />
-				<figcaption>It is a cornell</figcaption>
+				<img src="the-emperor1.png" alt="the emperor" style="width:70%" />
+				<figcaption>The emperor of mankind</figcaption>
 			</figure>
 
 			<!--
@@ -45,7 +45,11 @@
 	-->
 
 			<h2>Overview</h2>
-
+			In this assignment, I implemented a path tracer capable of simulating realistic light transport through ray tracing. 
+			Our implementations include ray-triangle intersection (Möller-Trumbore algorithm), BVH acceleration for efficient scene traversal, direct lighting estimation via hemisphere and importance sampling, indirect illumination using recursive Monte Carlo path tracing, and adaptive sampling to reduce noise dynamically. 
+			By integrating these features, the renderer produces images with effects like soft shadows, global illumination, and realistic material interactions.(quite fun part here)
+			I understand more about the computational trade-offs of acceleration structures (BVH reduced rendering times by 10–50x), the dramatic noise reduction from importance sampling over uniform hemisphere methods, and the iterative nature of light transport simulation (e.g., Russian Roulette termination). 
+			This homework deepened my understanding of how physical light-material interactions are modeled in code and the critical role of statistical sampling in balancing accuracy and performance. Give me more explanation for the graphics of the computer.
 
 			<h2>Part 1: Ray Generation and Scene Intersection</h2>
 			Ray generation is the first step in the rendering pipeline where rays are cast from the camera into the scene.
@@ -97,10 +101,12 @@
 			The primitives are divided into two subsets: those with centroids less than the mean along the chosen axis go to the left child, and the rest go to the right child.
 			This process repeats recursively for each child node until all nodes are either leaves or satisfy the splitting condition.
 
-			<p>The intersection functions (has_intersection and intersect) traverse the BVH to efficiently determine if a ray intersects any primitive.
-			Starting at the root, the ray is tested against the node's bounding box. If there is no intersection, the traversal stops. For leaf nodes, the ray is tested against all primitives in the node.
-			For internal nodes, the traversal continues recursively into the left and right children. The has_intersection function short-circuits as soon as it finds any intersection, while intersect updates the closest intersection point in the Intersection object.
-			This hierarchical structure significantly reduces the number of intersection tests by culling large groups of primitives early in the traversal.</p>
+			<p>
+				The intersection functions (has_intersection and intersect) traverse the BVH to efficiently determine if a ray intersects any primitive.
+				Starting at the root, the ray is tested against the node's bounding box. If there is no intersection, the traversal stops. For leaf nodes, the ray is tested against all primitives in the node.
+				For internal nodes, the traversal continues recursively into the left and right children. The has_intersection function short-circuits as soon as it finds any intersection, while intersect updates the closest intersection point in the Intersection object.
+				This hierarchical structure significantly reduces the number of intersection tests by culling large groups of primitives early in the traversal.
+			</p>
 
 
 			<h2>Part 3: Direct Illumination</h2>
@@ -108,11 +114,13 @@
 			For each sample, it transforms the direction to world space, casts a ray, and accumulates light contribution if the ray hits an emissive object, weighted by the BRDF, cosine term, and PDF.
 			The hemisphere sampling implementation constructs a local coordinate system aligned with the surface normal, samples directions uniformly via the BSDF’s sample_f (returning local-space directions and PDFs), transforms them to world space, and casts rays to check for emissive intersections, accumulating light as \((BRDF * emission * cosθ) / (pdf * num_samples)\) with no explicit light targeting.
 
-			<p>Importance Sampling explicitly samples toward lights via sample_L, generating directions and PDFs from light sources.
-			It checks visibility by casting rays clamped to the light’s distance, then computes BRDF and accumulates contributions.
-			Importance sampling reduces noise by focusing samples on lights but requires correct coordinate handling and PDF weighting.
-			The importance sampling method iterates lights directly, samples world-space directions toward lights via sample_L (returning radiance, distance, and PDF), casts visibility rays clamped to the light’s distance, and accumulates \((BRDF * L * cosθ) / pdf \) but fails to transform w_in to local space before BRDF evaluation and calculates averages by dividing the total L_out by sample_num after per-light accumulation instead of averaging per-light contributions first.
-			Both methods offset rays by EPS_F to avoid self-intersection, but hemisphere sampling implicitly tests all emissive surfaces via random walks, while importance sampling explicitly queries lights but mishandles coordinate spaces and PDF weighting, introducing energy conservation errors.</p>
+			<p>
+				Importance Sampling explicitly samples toward lights via sample_L, generating directions and PDFs from light sources.
+				It checks visibility by casting rays clamped to the light’s distance, then computes BRDF and accumulates contributions.
+				Importance sampling reduces noise by focusing samples on lights but requires correct coordinate handling and PDF weighting.
+				The importance sampling method iterates lights directly, samples world-space directions toward lights via sample_L (returning radiance, distance, and PDF), casts visibility rays clamped to the light’s distance, and accumulates \((BRDF * L * cosθ) / pdf \) but fails to transform w_in to local space before BRDF evaluation and calculates averages by dividing the total L_out by sample_num after per-light accumulation instead of averaging per-light contributions first.
+				Both methods offset rays by EPS_F to avoid self-intersection, but hemisphere sampling implicitly tests all emissive surfaces via random walks, while importance sampling explicitly queries lights but mishandles coordinate spaces and PDF weighting, introducing energy conservation errors.
+			</p>
 
 			<h2>Part 4: Global Illumination</h2>
 			The indirect lighting is handled in at_least_one_bounce_radiance, which recursively traces rays to simulate global illumination:
