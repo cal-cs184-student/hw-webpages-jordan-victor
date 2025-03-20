@@ -26,323 +26,391 @@
 		</style>
 	</head>
 	<body>
-		<div class="container">
-			<h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
-			<div style="text-align: center;">Names: Jinglun Zhang and Feiyang Liu</div>
+        <div class="container">
+            <h1>CS184/284A Spring 2025 Homework 3 Write-Up</h1>
+            <div style="text-align: center;">Names: Jinglun Zhang and Feiyang Liu</div>
 
-			<br>
+            <br>
 
-			Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-jordan-victor/">https://cal-cs184-student.github.io/hw-webpages-jordan-victor/</a>
-			Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw3-for-the-emperor">https://github.com/cal-cs184-student/sp25-hw3-for-the-emperor</a>
+            Link to webpage: <a href="https://cal-cs184-student.github.io/hw-webpages-jordan-victor/">https://cal-cs184-student.github.io/hw-webpages-jordan-victor/</a>
+            Link to GitHub repository: <a href="https://github.com/cal-cs184-student/sp25-hw3-for-the-emperor">https://github.com/cal-cs184-student/sp25-hw3-for-the-emperor</a>
 
-			<figure>
-				<img src="the-emperor1.png" alt="the emperor" style="width:70%" />
-				<figcaption>The emperor of mankind</figcaption>
-			</figure>
+            <figure>
+                <img src="the-emperor1.png" alt="the emperor" style="width:70%" />
+                <figcaption>The emperor of mankind</figcaption>
+            </figure>
 
-			<!--
-	We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
-	-->
+            <!--
+    We've already added one heading per part, to make your write-up as navigable when grading. Please fit your write-up within these sections!
+    -->
 
-			<h2>Overview</h2>
-			In this assignment, I implemented a path tracer capable of simulating realistic light transport through ray tracing.
-			Our implementations include ray-triangle intersection (Möller-Trumbore algorithm), BVH acceleration for efficient scene traversal, direct lighting estimation via hemisphere and importance sampling, indirect illumination using recursive Monte Carlo path tracing, and adaptive sampling to reduce noise dynamically.
-			By integrating these features, the renderer produces images with effects like soft shadows, global illumination, and realistic material interactions.(quite fun part here)
-			I understand more about the computational trade-offs of acceleration structures (BVH reduced rendering times), the dramatic noise reduction from importance sampling over uniform hemisphere methods, and the iterative nature of light transport simulation (e.g., Russian Roulette termination).
-			This homework deepened my understanding of how physical light-material interactions are modeled in code and the critical role of statistical sampling in balancing accuracy and performance. Give me more explanation for the graphics of the computer.
+            <h2>Overview</h2>
+            In this assignment, I implemented a path tracer capable of simulating realistic light transport through ray tracing.
+            Our implementations include ray-triangle intersection (Möller-Trumbore algorithm), BVH acceleration for efficient scene traversal, direct lighting estimation via hemisphere and importance sampling, indirect illumination using recursive Monte Carlo path tracing, and adaptive sampling to reduce noise dynamically.
+            By integrating these features, the renderer produces images with effects like soft shadows, global illumination, and realistic material interactions.(quite fun part here)
+            I understand more about the computational trade-offs of acceleration structures (BVH reduced rendering times), the dramatic noise reduction from importance sampling over uniform hemisphere methods, and the iterative nature of light transport simulation (e.g., Russian Roulette termination).
+            This homework deepened my understanding of how physical light-material interactions are modeled in code and the critical role of statistical sampling in balancing accuracy and performance. Give me more explanation for the graphics of the computer.
 
-			<h2>Part 1: Ray Generation and Scene Intersection</h2>
-			Ray generation is the first step in the rendering pipeline where rays are cast from the camera into the scene.
-			Each ray corresponds to a pixel on the screen. The direction of the ray is determined by the camera's position, the pixel's position on the screen, and the field of view.
-			The ray is defined by its origin (usually the camera's position) and its direction. Once rays are generated, the next step is to determine if they intersect with any objects (primitives) in the scene.
-			This is done by testing each ray against all the primitives in the scene. The goal is to find the closest intersection point along the ray, which will determine the color of the pixel.
+            <h2>Part 1: Ray Generation and Scene Intersection</h2>
+            Ray generation is the first step in the rendering pipeline where rays are cast from the camera into the scene.
+            Each ray corresponds to a pixel on the screen. The direction of the ray is determined by the camera's position, the pixel's position on the screen, and the field of view.
+            The ray is defined by its origin (usually the camera's position) and its direction. Once rays are generated, the next step is to determine if they intersect with any objects (primitives) in the scene.
+            This is done by testing each ray against all the primitives in the scene. The goal is to find the closest intersection point along the ray, which will determine the color of the pixel.
 
-			<p>
-				We implement two functions here for the triangle intersection: intersect() and has_intersect(). They determines whether a ray intersects with a triangle using the Möller-Trumbore method.
-				It calculates the barycentric coordinates and the distance along the ray to the intersection point, ensuring that the intersection is valid and within the ray's bounds.
-				If an intersection is found, the relevant data is stored in the Intersection object for further processing in the rendering pipeline.
-				In has_intersection, the function checks if a ray intersects with a triangle by computing edge vectors (E1, E2) and the vector from the triangle's first vertex to the ray's origin (S).
-				It then calculates cross products (S1, S2) and uses them to determine the barycentric coordinates (b1, b2, b0) and the distance t along the ray to the intersection point.
-				The function returns true if the intersection is valid, meaning t lies within the ray's bounds (r.min_t to r.max_t) and the barycentric coordinates are within the range [0, 1].
-				The intersect function builds on this by performing the same calculations but also records the intersection details in an Intersection object if a valid intersection is found.
-				It updates the object with the distance t, the triangle primitive, the BSDF (material properties), and the interpolated normal at the intersection point, which is computed as a weighted sum of the triangle's vertex normals (n1, n2, n3) using the barycentric coordinates.
-			</p>
-			<div style="display: flex; flex-direction: column; align-items: center;">
-				<table style="width: 100%; text-align: center; border-collapse: collapse;">
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBempty.png" width="400px" />
-							<figcaption>CBempty.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBgems.png" width="400px" />
-							<figcaption>CBgems.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBspheres.png" width="400px" />
-							<figcaption>CBspheres.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
-
-
-			<h2>Part 2: Bounding Volume Hierarchy</h2>
-			We will implement BVH in part2. The Bounding Volume Hierarchy (BVH) algorithm recursively partitions a set of primitives into a tree structure to accelerate ray-primitive intersection tests.
-			The algorithm begins by computing the bounding box (bbox) of all primitives in the current node and calculating the centroid of these bounding boxes (mean).
-			If the number of primitives (n) is less than or equal to the max_leaf_size, the node is marked as a leaf, storing the primitives and their bounding box.
-			Otherwise, the algorithm splits the primitives into two groups based on a heuristic. The heuristic chosen here is to split along <b>the longest axis</b> of the bounding box (x, y, or z) to ensure balanced partitions.
-			The primitives are divided into two subsets: those with centroids less than the mean along the chosen axis go to the left child, and the rest go to the right child.
-			This process repeats recursively for each child node until all nodes are either leaves or satisfy the splitting condition.
-
-			<p>
-				In our code, the intersection functions (has_intersection and intersect) traverse the BVH to efficiently determine if a ray intersects any primitive.
-				Starting at the root, the ray is tested against the node's bounding box. If there is no intersection, the traversal stops. For leaf nodes, the ray is tested against all primitives in the node.
-				For internal nodes, the traversal continues recursively into the left and right children. The has_intersection function short-circuits as soon as it finds any intersection, while intersect updates the closest intersection point in the Intersection object.
-				This hierarchical structure significantly reduces the number of intersection tests by culling large groups of primitives early in the traversal.
-			</p>
-			<div style="display: flex; flex-direction: column; align-items: center;">
-				<table style="width: 100%; text-align: center; border-collapse: collapse;">
-					<tr>
-						<td style="text-align: center;">
-							<img src="bunny.png" width="400px" />
-							<figcaption>Bunny.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="maxplanck.png" width="400px" />
-							<figcaption>maxplanck.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="cow.png" width="400px" />
-							<figcaption>Cow.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<p>
-				If we are rendering without BVH acceleration exhibited exponential time growth, it often taking much more longer than BVH-accelerated renders. For example, when we are rendering CBgems with 800 triangles required minutes without BVH, while the same scene rendered in seconds with BVH speed-up.
-				This disparity arises because naive ray-object intersection checks scale linearly with scene complexity (O(N) per ray), while BVH traversal reduces this to logarithmic time (O(log N)) by hierarchically culling irrelevant geometry. I get these time information from the internet. It is useful to know they have such a difference.
-				Scenes with spatially clustered objects saw even greater gains, but BVH exploit spatial coherence to skip entire subtrees of geometry.
-				Without BVH, shadow/reflection rays dominated runtime (90%+ of compute), whereas BVH shifted bottlenecks to shading/BSDF evaluations. BVH can save way more time in graphics.
-			</p>
-			<h2>Part 3: Direct Illumination</h2>
-			We have two different way to implement direct lighting estimation. The first is estimate_direct_lighting_hemisphere, where we estimate the direct lighting on a point by sampling uniformly in a hemisphere.
-			The second is estimate_direct_lighting_importance. We sample directions between the light source and the hit points. If we cast a ray in this direction and there is no other object between the hit point and the light source, then we know that this light source does cast light onto the hit point.
-			<p>
-				In Hemisphere lighting, we have constructed orthonormal basis matrices (o2w, w2o) using make_coord_space.
-				For each sample, call <code>isect.bsdf->sample_f(w_out, &w_in, &pdf)</code> to generate a random direction w_in in the local hemisphere, returning BRDF value and PDF.
-				It transforms the direction to world space, casts a ray, and accumulates light contribution if the ray hits an emissive object, weighted by the BRDF, cosine term, and PDF.
-				It will construct a local coordinate system aligned with the surface normal, samples directions uniformly via the BSDF’s sample_f (returning local-space directions and PDFs), transforms them to world space, and casts rays to check for emissive intersections, accumulating light as \((BRDF * emission * cosθ) / (pdf * num_samples)\) with no explicit light targeting.
-			</p>
-			<p>
-				Importance Sampling explicitly samples toward lights via sample_L, generating directions and PDFs from light sources.
-				It checks visibility by casting rays clamped to the light’s distance, then computes BRDF and accumulates contributions.
-				Importance sampling reduces noise by focusing samples on lights but requires correct coordinate handling and PDF weighting.
-				The importance sampling method iterates lights directly, samples world-space directions toward lights via sample_L (returning radiance, distance, and PDF), casts visibility rays clamped to the light’s distance, and accumulates \((BRDF * L * cosθ) / pdf \).
-				It doesn't need a local coordinate system.
-			</p>
-			<div style="display: flex; flex-direction: column; align-items: center;">
-				<table style="width: 100%; text-align: center; border-collapse: collapse;">
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_H_64_32.png" width="400px" />
-							<figcaption>CBunny with Hemisphere lighting.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBempty_H_64_32.png" width="400px" />
-							<figcaption>CBempty with Hemishpere lighting.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="bunny_64_32.png" width="400px" />
-							<figcaption>Bunny important sampling.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="dragon_64_32.png" width="400px" />
-							<figcaption>Dragon important sampling.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="bench_64_32.png" width="400px" />
-							<figcaption>Bench important sampling.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<p>
-				One particular scene with at least one area light and compare the noise levels in soft shadows when rendering with 1, 4, 16, and 64 light rays.
-			</p>
-			<div style="display: flex; flex-direction: column; align-items: center;">
-				<table style="width: 100%; text-align: center; border-collapse: collapse;">
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_1_1.png" width="400px" />
-							<figcaption>CBunny -l 1.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBbunny_1_4.png" width="400px" />
-							<figcaption>CBunny -l 4.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_1_16.png" width="400px" />
-							<figcaption>CBunny -l 16.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBbunny_1_64.png" width="400px" />
-							<figcaption>CBunny -l 64.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<p>
-				Uniform hemisphere sampling scatters rays across all directions, wasting samples on dark regions and rarely hitting small area lights.
-				This results in persistent noise even at high sample counts, as most samples miss the light entirely.
-				In contrast, light sampling explicitly targets the light source, ensuring each sample contributes meaningfully to the direct lighting integral.
-				Light sampling achieves clean shadows, while hemisphere sampling remains grainy, requiring orders of magnitude more samples to converge. We can see this from images above(even they are not in comparsion).
-			</p>
-			<h2>Part 4: Global Illumination</h2>
-			The indirect lighting component is handled in at_least_one_bounce_radiance, which recursively traces rays to simulate global illumination.
-			After computing the direct lighting (one_bounce_radiance), the function samples a new direction via <code>isect.bsdf->sample_f(w_out, &w_in, &pdf)</code> to generate a scattered ray (w_in in local coordinates).
-			This direction is transformed to world space <code>(o2w * w_in)</code>, and a new ray is cast with depth decremented by 1. If the ray intersects geometry (bvh->intersect), the function recursively calls itself to compute the indirect contribution from subsequent bounces, weighted by the BRDF (brdf), cosine term (cos_), and PDF.
-			Russian Roulette termination (coin_flip(russian_roulette)) stochastically terminates rays with a 5% probability (russian_roulette = 0.95) to prevent infinite recursion.
-			The indirect contribution is scaled by 1 / russian_roulette to preserve energy conservation. The isAccumBounces flag determines whether to accumulate contributions from all bounces (direct + indirect) or isolate indirect-only paths, enabling per-bounce analysis.
-			<div style="display: flex; flex-direction: column; align-items: center;">
-				<table style="width: 100%; text-align: center; border-collapse: collapse;">
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_32.png" width="400px" />
-							<figcaption>CBbunny 1024.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBdragon_1024_32.png" width="400px" />
-							<figcaption>Dragon 1024.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBCBspheres_1024_32.png" width="400px" />
-							<figcaption>CBspheres 1024.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<p>
-				Here is compared rendered views first with only direct illumination, then only indirect illumination.
-			</p>
-			<p>
-				Here is compared rendered accbounce = true:
-			</p>
-			<div style="display: flex; flex-direction: column; align-items: center;">
-				<table style="width: 100%; text-align: center; border-collapse: collapse;">
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_1_0.png" width="400px" />
-							<figcaption>CBbunny m=0.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_1_1.png" width="400px" />
-							<figcaption>CBbunny m=1.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_1_2.png" width="400px" />
-							<figcaption>CBbunny m=2.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_1_3.png" width="400px" />
-							<figcaption>CBbunny m=3.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_1_4.png" width="400px" />
-							<figcaption>CBbunny m=4.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_1_5.png" width="400px" />
-							<figcaption>CBbunny m=5.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<p>
-				Here is compared rendered accbounce = false:
-			</p>
-			<div style="display: flex; flex-direction: column; align-items: center;">
-				<table style="width: 100%; text-align: center; border-collapse: collapse;">
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_0_0.png" width="400px" />
-							<figcaption>CBbunny m=0.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_0_1.png" width="400px" />
-							<figcaption>CBbunny m=1.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_0_2.png" width="400px" />
-							<figcaption>CBbunny m=2.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_0_3.png" width="400px" />
-							<figcaption>CBbunny m=3.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_0_4.png" width="400px" />
-							<figcaption>CBbunny m=4.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBbunny_1024_0_5.png" width="400px" />
-							<figcaption>CBbunny m=5.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<h2>Part 5: Adaptive Sampling</h2>
-			Adaptive Sampling dynamically allocates samples per pixel based on variance: for each pixel, the code tracks cumulative illuminance (s1) and squared illuminance (s2) across samples.
-			Every samplesPerBatch iterations, it computes the mean (mu) and standard deviation (sigma), then checks if the 95% confidence interval (I = 1.96 * sigma / sqrt(n)) falls below maxTolerance * mu; if so, sampling stops early.
-			This prioritizes more samples for noisy regions (e.g., soft shadows, complex geometry) and fewer for uniform areas.
-			Like CBbunny.dae and CBDragon.dae, rendering with -s 2048 -l 1 -m 5 produces sample rate images where bright/dark regions reflect high/low sample counts, alongside noise-free results—demonstrating efficiency (fewer samples in smooth areas) without sacrificing detail.
-			<div style="display: flex; flex-direction: column; align-items: center;">
-				<table style="width: 100%; text-align: center; border-collapse: collapse;">
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBbunny_2048.png" width="400px" />
-							<figcaption>Bunny.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBbunny_2048_rate.png" width="400px" />
-							<figcaption>Bunny's rate.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="CBdragon_2048.png" width="400px" />
-							<figcaption>Dragon.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="CBdragon_2048_rate.png" width="400px" />
-							<figcaption>Dragon's rate.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
-			<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
+            <p>
+                We implement two functions here for the triangle intersection: intersect() and has_intersect(). They determines whether a ray intersects with a triangle using the Möller-Trumbore method.
+                It calculates the barycentric coordinates and the distance along the ray to the intersection point, ensuring that the intersection is valid and within the ray's bounds.
+                If an intersection is found, the relevant data is stored in the Intersection object for further processing in the rendering pipeline.
+                In has_intersection, the function checks if a ray intersects with a triangle by computing edge vectors (E1, E2) and the vector from the triangle's first vertex to the ray's origin (S).
+                It then calculates cross products (S1, S2) and uses them to determine the barycentric coordinates (b1, b2, b0) and the distance t along the ray to the intersection point.
+                The function returns true if the intersection is valid, meaning t lies within the ray's bounds (r.min_t to r.max_t) and the barycentric coordinates are within the range [0, 1].
+                The intersect function builds on this by performing the same calculations but also records the intersection details in an Intersection object if a valid intersection is found.
+                It updates the object with the distance t, the triangle primitive, the BSDF (material properties), and the interpolated normal at the intersection point, which is computed as a weighted sum of the triangle's vertex normals (n1, n2, n3) using the barycentric coordinates.
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBempty.png" width="400px" />
+                            <figcaption>CBempty.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBgems.png" width="400px" />
+                            <figcaption>CBgems.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBspheres.png" width="400px" />
+                            <figcaption>CBspheres.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
 
-		</div>
-	</body>
+            <h2>Part 2: Bounding Volume Hierarchy</h2>
+            We will implement BVH in part2. The Bounding Volume Hierarchy (BVH) algorithm recursively partitions a set of primitives into a tree structure to accelerate ray-primitive intersection tests.
+            The algorithm begins by computing the bounding box (bbox) of all primitives in the current node and calculating the centroid of these bounding boxes (mean).
+            If the number of primitives (n) is less than or equal to the max_leaf_size, the node is marked as a leaf, storing the primitives and their bounding box.
+            Otherwise, the algorithm splits the primitives into two groups based on a heuristic. The heuristic chosen here is to split along <b>the longest axis</b> of the bounding box (x, y, or z) to ensure balanced partitions.
+            The primitives are divided into two subsets: those with centroids less than the mean along the chosen axis go to the left child, and the rest go to the right child.
+            This process repeats recursively for each child node until all nodes are either leaves or satisfy the splitting condition.
+
+            <p>
+                In our code, the intersection functions (has_intersection and intersect) traverse the BVH to efficiently determine if a ray intersects any primitive.
+                Starting at the root, the ray is tested against the node's bounding box. If there is no intersection, the traversal stops. For leaf nodes, the ray is tested against all primitives in the node.
+                For internal nodes, the traversal continues recursively into the left and right children. The has_intersection function short-circuits as soon as it finds any intersection, while intersect updates the closest intersection point in the Intersection object.
+                This hierarchical structure significantly reduces the number of intersection tests by culling large groups of primitives early in the traversal.
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="bunny.png" width="400px" />
+                            <figcaption>Bunny.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="maxplanck.png" width="400px" />
+                            <figcaption>maxplanck.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="cow.png" width="400px" />
+                            <figcaption>Cow.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <p>
+                If we are rendering without BVH acceleration exhibited exponential time growth, it often taking much more longer than BVH-accelerated renders. For example, when we are rendering CBgems with 800 triangles required minutes without BVH, while the same scene rendered in seconds with BVH speed-up.
+                This disparity arises because naive ray-object intersection checks scale linearly with scene complexity (O(N) per ray), while BVH traversal reduces this to logarithmic time (O(log N)) by hierarchically culling irrelevant geometry. I get these time information from the internet. It is useful to know they have such a difference.
+                Scenes with spatially clustered objects saw even greater gains, but BVH exploit spatial coherence to skip entire subtrees of geometry.
+                Without BVH, shadow/reflection rays dominated runtime (90%+ of compute), whereas BVH shifted bottlenecks to shading/BSDF evaluations. BVH can save way more time in graphics.
+            </p>
+            <h2>Part 3: Direct Illumination</h2>
+            We have two different way to implement direct lighting estimation. The first is estimate_direct_lighting_hemisphere, where we estimate the direct lighting on a point by sampling uniformly in a hemisphere.
+            The second is estimate_direct_lighting_importance. We sample directions between the light source and the hit points. If we cast a ray in this direction and there is no other object between the hit point and the light source, then we know that this light source does cast light onto the hit point.
+            <p>
+                In Hemisphere lighting, we have constructed orthonormal basis matrices (o2w, w2o) using make_coord_space.
+                For each sample, call <code>isect.bsdf->sample_f(w_out, &w_in, &pdf)</code> to generate a random direction w_in in the local hemisphere, returning BRDF value and PDF.
+                It transforms the direction to world space, casts a ray, and accumulates light contribution if the ray hits an emissive object, weighted by the BRDF, cosine term, and PDF.
+                It will construct a local coordinate system aligned with the surface normal, samples directions uniformly via the BSDF’s sample_f (returning local-space directions and PDFs), transforms them to world space, and casts rays to check for emissive intersections, accumulating light as \((BRDF * emission * cosθ) / (pdf * num_samples)\) with no explicit light targeting.
+            </p>
+            <p>
+                Importance Sampling explicitly samples toward lights via sample_L, generating directions and PDFs from light sources.
+                It checks visibility by casting rays clamped to the light’s distance, then computes BRDF and accumulates contributions.
+                Importance sampling reduces noise by focusing samples on lights but requires correct coordinate handling and PDF weighting.
+                The importance sampling method iterates lights directly, samples world-space directions toward lights via sample_L (returning radiance, distance, and PDF), casts visibility rays clamped to the light’s distance, and accumulates \((BRDF * L * cosθ) / pdf \).
+                It doesn't need a local coordinate system.
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_H_64_32.png" width="400px" />
+                            <figcaption>CBunny with Hemisphere lighting.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBempty_H_64_32.png" width="400px" />
+                            <figcaption>CBempty with Hemishpere lighting.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="bunny_64_32.png" width="400px" />
+                            <figcaption>Bunny important sampling.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="dragon_64_32.png" width="400px" />
+                            <figcaption>Dragon important sampling.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="bench_64_32.png" width="400px" />
+                            <figcaption>Bench important sampling.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <p>
+                One particular scene with at least one area light and compare the noise levels in soft shadows when rendering with 1, 4, 16, and 64 light rays.
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1_1.png" width="400px" />
+                            <figcaption>CBunny -l 1.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1_4.png" width="400px" />
+                            <figcaption>CBunny -l 4.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1_16.png" width="400px" />
+                            <figcaption>CBunny -l 16.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1_64.png" width="400px" />
+                            <figcaption>CBunny -l 64.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <p>
+                Uniform hemisphere sampling scatters rays across all directions, wasting samples on dark regions and rarely hitting small area lights.
+                This results in persistent noise even at high sample counts, as most samples miss the light entirely.
+                In contrast, light sampling explicitly targets the light source, ensuring each sample contributes meaningfully to the direct lighting integral.
+                Light sampling achieves clean shadows, while hemisphere sampling remains grainy, requiring orders of magnitude more samples to converge. We can see this from images above(even they are not in comparsion).
+            </p>
+            <h2>Part 4: Global Illumination</h2>
+            The indirect lighting component is handled in at_least_one_bounce_radiance, which recursively traces rays to simulate global illumination.
+            After computing the direct lighting (one_bounce_radiance), the function samples a new direction via <code>isect.bsdf->sample_f(w_out, &w_in, &pdf)</code> to generate a scattered ray (w_in in local coordinates).
+            This direction is transformed to world space <code>(o2w * w_in)</code>, and a new ray is cast with depth decremented by 1. If the ray intersects geometry (bvh->intersect), the function recursively calls itself to compute the indirect contribution from subsequent bounces, weighted by the BRDF (brdf), cosine term (cos_), and PDF.
+            Russian Roulette termination (coin_flip(russian_roulette)) stochastically terminates rays with a 5% probability (russian_roulette = 0.95) to prevent infinite recursion.
+            The indirect contribution is scaled by 1 / russian_roulette to preserve energy conservation. The isAccumBounces flag determines whether to accumulate contributions from all bounces (direct + indirect) or isolate indirect-only paths, enabling per-bounce analysis.
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_32.png" width="400px" />
+                            <figcaption>CBbunny 1024.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBdragon_1024_32.png" width="400px" />
+                            <figcaption>Dragon 1024.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBCBspheres_1024_32.png" width="400px" />
+                            <figcaption>CBspheres 1024.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <p>
+                Here is compared rendered views first with only direct illumination, then only indirect illumination.
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_32.png" width="400px" />
+                            <figcaption>CBbunny 1024.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBdragon_1024_32.png" width="400px" />
+                            <figcaption>Dragon 1024.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <p>
+                Here is compared rendered accbounce = true:
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_1_0.png" width="400px" />
+                            <figcaption>CBbunny m=0.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_1_1.png" width="400px" />
+                            <figcaption>CBbunny m=1.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_1_2.png" width="400px" />
+                            <figcaption>CBbunny m=2.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_1_3.png" width="400px" />
+                            <figcaption>CBbunny m=3.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_1_4.png" width="400px" />
+                            <figcaption>CBbunny m=4.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_1_5.png" width="400px" />
+                            <figcaption>CBbunny m=5.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <p>
+                Here is compared rendered accbounce = false:
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_0_0.png" width="400px" />
+                            <figcaption>CBbunny m=0.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_0_1.png" width="400px" />
+                            <figcaption>CBbunny m=1.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_0_2.png" width="400px" />
+                            <figcaption>CBbunny m=2.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_0_3.png" width="400px" />
+                            <figcaption>CBbunny m=3.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_0_4.png" width="400px" />
+                            <figcaption>CBbunny m=4.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="CBbunny_1024_0_5.png" width="400px" />
+                            <figcaption>CBbunny m=5.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <p>
+                When rendering CBbunny.dae with isAccumBounces=false and varying max_ray_depth, the 2nd and 3rd bounces introduce critical indirect illumination effects absent in rasterization:
+                2nd: Captures first indirect light. This adds subtle color bleeding and softens shadows.
+                3rd: Adds secondary indirect contributions, further smoothing noise in shadowed regions and enhancing ambient occlusion.
+                Rasterization typically computes direct lighting only, relying on prebaked textures or screen-space approximations for indirect effects.
+                Path tracing’s 2nd/3rd bounces physically simulate multi-bounce light transport, producing accurate soft shadows, color bleeding, and ambient occlusion without artifacts like light leaks or overblown shadows.
+                For CBbunny.dae, this translates to lifelike interreflections and smoother transitions between light/shadow, unachievable with rasterization in real-time.
+            </p>
+            <p>
+                Russian Roulette rendering with max_ray_depth set to 0, 1, 2, 3, 4, and 100
+            </p>
+
+            <p>
+                Various sample-per-pixel rates, including at least 1, 2, 4, 8, 16, 64, and 1024. Use 4 light rays.
+            </p>
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="dragon_1.png" width="400px" />
+                            <figcaption>dragon 1.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="dragon_2.png" width="400px" />
+                            <figcaption>dragon 2.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="dragon_4.png" width="400px" />
+                            <figcaption>dragon 4.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="dragon_8.png" width="400px" />
+                            <figcaption>dragon 8.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="dragon_16.png" width="400px" />
+                            <figcaption>dragon 16.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="dragon_64.png" width="400px" />
+                            <figcaption>dragon 64.</figcaption>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="dragon_1024.png" width="400px" />
+                            <figcaption>dragon 1024.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+                <h2>Part 5: Adaptive Sampling</h2>
+                Adaptive Sampling dynamically allocates samples per pixel based on variance: for each pixel, the code tracks cumulative illuminance (s1) and squared illuminance (s2) across samples.
+                Every samplesPerBatch iterations, it computes the mean (mu) and standard deviation (sigma), then checks if the 95% confidence interval (I = 1.96 * sigma / sqrt(n)) falls below maxTolerance * mu; if so, sampling stops early.
+                This prioritizes more samples for noisy regions (e.g., soft shadows, complex geometry) and fewer for uniform areas.
+                Like CBbunny.dae and CBDragon.dae, rendering with -s 2048 -l 1 -m 5 produces sample rate images where bright/dark regions reflect high/low sample counts, alongside noise-free results—demonstrating efficiency (fewer samples in smooth areas) without sacrificing detail.
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                        <tr>
+                            <td style="text-align: center;">
+                                <img src="CBbunny_2048.png" width="400px" />
+                                <figcaption>Bunny.</figcaption>
+                            </td>
+                            <td style="text-align: center;">
+                                <img src="CBbunny_2048_rate.png" width="400px" />
+                                <figcaption>Bunny's rate.</figcaption>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <img src="CBdragon_2048.png" width="400px" />
+                                <figcaption>Dragon.</figcaption>
+                            </td>
+                            <td style="text-align: center;">
+                                <img src="CBdragon_2048_rate.png" width="400px" />
+                                <figcaption>Dragon's rate.</figcaption>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <h2>(Optional) Part 6: Extra Credit Opportunities</h2>
+
+
+            </div>
+</body>
 </html>
