@@ -57,15 +57,14 @@
 			The ray is defined by its origin (usually the camera's position) and its direction. Once rays are generated, the next step is to determine if they intersect with any objects (primitives) in the scene.
 			This is done by testing each ray against all the primitives in the scene. The goal is to find the closest intersection point along the ray, which will determine the color of the pixel.
 
-			The triangle intersection algorithm implemented in our code determines whether a ray intersects with a triangle using the Möller-Trumbore method.
+			<p>We implement two functions here for the triangle intersection: intersect() and has_intersect(). They determines whether a ray intersects with a triangle using the Möller-Trumbore method.
 			It calculates the barycentric coordinates and the distance along the ray to the intersection point, ensuring that the intersection is valid and within the ray's bounds.
 			If an intersection is found, the relevant data is stored in the Intersection object for further processing in the rendering pipeline.
 			In has_intersection, the function checks if a ray intersects with a triangle by computing edge vectors (E1, E2) and the vector from the triangle's first vertex to the ray's origin (S).
 			It then calculates cross products (S1, S2) and uses them to determine the barycentric coordinates (b1, b2, b0) and the distance t along the ray to the intersection point.
 			The function returns true if the intersection is valid, meaning t lies within the ray's bounds (r.min_t to r.max_t) and the barycentric coordinates are within the range [0, 1].
 			The intersect function builds on this by performing the same calculations but also records the intersection details in an Intersection object if a valid intersection is found.
-			It updates the object with the distance t, the triangle primitive, the BSDF (material properties), and the interpolated normal at the intersection point, which is computed as a weighted sum of the triangle's vertex normals (n1, n2, n3) using the barycentric coordinates.
-			Both functions ensure ray-triangle intersection testing, with intersect providing additional data for shading and rendering purposes.
+			It updates the object with the distance t, the triangle primitive, the BSDF (material properties), and the interpolated normal at the intersection point, which is computed as a weighted sum of the triangle's vertex normals (n1, n2, n3) using the barycentric coordinates.</p>
 
 			<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
 			<div style="display: flex; flex-direction: column; align-items: center;">
