@@ -209,42 +209,31 @@
 				Light sampling achieves clean shadows, while hemisphere sampling remains grainy, requiring orders of magnitude more samples to converge. We can see this from images above(even they are not in comparsion).
 			</p>
 			<h2>Part 4: Global Illumination</h2>
-			The indirect lighting is handled in at_least_one_bounce_radiance, which recursively traces rays to simulate global illumination:
-			Russian Roulette Termination: A 35% probability (russian_roulette = 1 - 0.35) of terminating the ray early to control computation cost.
-			Recursive Sampling: After computing the first bounce (direct lighting), the function samples a new direction via bsdf->sample_f, casts a ray, and accumulates indirect illumination from subsequent bounces.
-			Accumulation: If isAccumBounces is true, indirect contributions are weighted by brdf * cos_theta / (pdf * russian_roulette) to account for path termination.
-			Global Illumination (Direct + Indirect)
-			Rendered Image (1024 samples/pixel):
-			Direct illumination produces sharp shadows and lit surfaces.
-			Indirect illumination adds subtle color bleeding (e.g., red tint from a nearby wall) and softens shadows.
-			Combined, the image shows realistic light diffusion and complex interactions (see CBbunny.dae with area light).
-			Direct vs. Indirect Illumination (1024 samples/pixel)
-			Direct Only:
-			Sharp shadows, no color bleeding.
-			Limited to light paths with exactly one bounce.
-			Indirect Only:
-			Dimmer, diffuse lighting from bounced rays.
-			Captures effects like light leaking into corners or color transfer between surfaces.
-			Per-Bounce Analysis (CBbunny.dae, -m 0-5, isAccumBounces=false)
-			Bounce 0: Only emission (light sources).
-			Bounce 1: Direct lighting (hard shadows).
-			Bounce 2: First indirect bounce (soft shadows, faint color bleeding).
-			Bounce 3: Secondary indirect bounces (smoother gradients, visible color diffusion).
-			Bounce 4-5: Subtle refinements in dark areas.
-			Comparison to Rasterization: Unlike rasterization (which only computes direct lighting), path tracing captures multi-bounce effects like soft shadows and color bleeding, adding realism.
-			Accumulated vs. Unaccumulated Bounces (CBbunny.dae)
-			Accumulated: Each bounce adds to the previous, resulting in a brighter, smoother image.
-			Unaccumulated: Shows isolated contributions per bounce (e.g., bounce 2 highlights indirect paths missing in rasterization).
-			Russian Roulette Rendering (-m 100)
-			Terminates long paths probabilistically, reducing computation.
-			At 1024 samples, noise is minimal, but very high max depth (e.g., 100) has negligible visual impact compared to -m 5.
-			Sample Rate Comparison (1, 2, 4, 8, 16, 64, 1024 samples, 4 light rays)
-			1-16 samples: Extremely noisy, unusable.
-			64 samples: Noise reduced, but splotchy.
-			1024 samples: Near-convergence, smooth gradients.
-			Key Insight: Higher samples disproportionately reduce noise in indirect lighting due to Monte Carlo averaging.
-
-
+			The indirect lighting component is handled in at_least_one_bounce_radiance, which recursively traces rays to simulate global illumination.
+			After computing the direct lighting (one_bounce_radiance), the function samples a new direction via isect.bsdf->sample_f(w_out, &w_in, &pdf) to generate a scattered ray (w_in in local coordinates).
+			This direction is transformed to world space (o2w * w_in), and a new ray is cast with depth decremented by 1. If the ray intersects geometry (bvh->intersect), the function recursively calls itself to compute the indirect contribution from subsequent bounces, weighted by the BRDF (brdf), cosine term (cos_), and PDF.
+			Russian Roulette termination (coin_flip(russian_roulette)) stochastically terminates rays with a 5% probability (russian_roulette = 0.95) to prevent infinite recursion.
+			The indirect contribution is scaled by 1 / russian_roulette to preserve energy conservation. The isAccumBounces flag determines whether to accumulate contributions from all bounces (direct + indirect) or isolate indirect-only paths, enabling per-bounce analysis.
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="CBbunny_1024_32.png" width="400px" />
+							<figcaption>CBunny 1024.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="CBdragon_1024_32.png" width="400px" />
+							<figcaption>Dragon 1024.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="CBCBspheres_1024_32.png" width="400px" />
+							<figcaption>CBunny -l 16.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 
 			<h2>Part 5: Adaptive Sampling</h2>
 
@@ -252,42 +241,6 @@
 			<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
 
 
-			<h2>Additional Notes (please remove)</h2>
-			<ul>
-				<li>You can also add code if you'd like as so: <code>code code code</code></li>
-				<li>
-					If you'd like to add math equations,
-					<ul>
-						<li>You can write inline equations like so: \( a^2 + b^2 = c^2 \)</li>
-						<li>You can write display equations like so: \[ a^2 + b^2 = c^2 \]</li>
-					</ul>
-				</li>
-			</ul>
-			<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
-			<div style="display: flex; flex-direction: column; align-items: center;">
-				<table style="width: 100%; text-align: center; border-collapse: collapse;">
-					<tr>
-						<td style="text-align: center;">
-							<img src="cornell.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="cornell.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
-						</td>
-					</tr>
-					<tr>
-						<td style="text-align: center;">
-							<img src="cornell.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
-						</td>
-						<td style="text-align: center;">
-							<img src="cornell.png" width="400px" />
-							<figcaption>Caption goes here.</figcaption>
-						</td>
-					</tr>
-				</table>
-			</div>
 		</div>
 	</body>
 </html>
