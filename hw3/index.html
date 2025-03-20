@@ -255,7 +255,7 @@
 			Adaptive Sampling dynamically allocates samples per pixel based on variance: for each pixel, the code tracks cumulative illuminance (s1) and squared illuminance (s2) across samples.
 			Every samplesPerBatch iterations, it computes the mean (mu) and standard deviation (sigma), then checks if the 95% confidence interval (I = 1.96 * sigma / sqrt(n)) falls below maxTolerance * mu; if so, sampling stops early.
 			This prioritizes more samples for noisy regions (e.g., soft shadows, complex geometry) and fewer for uniform areas.
-			Like CBspheres.dae and CBDragon.dae, rendering with -s 2048 -l 1 -m 5 produces sample rate images where bright/dark regions reflect high/low sample counts, alongside noise-free results—demonstrating efficiency (fewer samples in smooth areas) without sacrificing detail.
+			Like CBbunny.dae and CBDragon.dae, rendering with -s 2048 -l 1 -m 5 produces sample rate images where bright/dark regions reflect high/low sample counts, alongside noise-free results—demonstrating efficiency (fewer samples in smooth areas) without sacrificing detail.
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
 					<tr>
