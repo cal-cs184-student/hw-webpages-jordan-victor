@@ -90,21 +90,43 @@
 
 
 			<h2>Part 2: Bounding Volume Hierarchy</h2>
-			The Bounding Volume Hierarchy (BVH) construction algorithm recursively partitions a set of primitives into a tree structure to accelerate ray-primitive intersection tests.
+			We will implement BVH in part2. The Bounding Volume Hierarchy (BVH) algorithm recursively partitions a set of primitives into a tree structure to accelerate ray-primitive intersection tests.
 			The algorithm begins by computing the bounding box (bbox) of all primitives in the current node and calculating the centroid of these bounding boxes (mean).
 			If the number of primitives (n) is less than or equal to the max_leaf_size, the node is marked as a leaf, storing the primitives and their bounding box.
-			Otherwise, the algorithm splits the primitives into two groups based on a heuristic. The heuristic chosen here is to split along the longest axis of the bounding box (x, y, or z) to ensure balanced partitions.
+			Otherwise, the algorithm splits the primitives into two groups based on a heuristic. The heuristic chosen here is to split along <b>the longest axis</b> of the bounding box (x, y, or z) to ensure balanced partitions.
 			The primitives are divided into two subsets: those with centroids less than the mean along the chosen axis go to the left child, and the rest go to the right child.
 			This process repeats recursively for each child node until all nodes are either leaves or satisfy the splitting condition.
 
 			<p>
-				The intersection functions (has_intersection and intersect) traverse the BVH to efficiently determine if a ray intersects any primitive.
+				In our code, the intersection functions (has_intersection and intersect) traverse the BVH to efficiently determine if a ray intersects any primitive.
 				Starting at the root, the ray is tested against the node's bounding box. If there is no intersection, the traversal stops. For leaf nodes, the ray is tested against all primitives in the node.
 				For internal nodes, the traversal continues recursively into the left and right children. The has_intersection function short-circuits as soon as it finds any intersection, while intersect updates the closest intersection point in the Intersection object.
 				This hierarchical structure significantly reduces the number of intersection tests by culling large groups of primitives early in the traversal.
 			</p>
-
-
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="bunny.png" width="400px" />
+							<figcaption>Bunny.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="maxplanck.png" width="400px" />
+							<figcaption>maxplanck.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="cow.png" width="400px" />
+							<figcaption>Cow.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>If we are rendering without BVH acceleration exhibited exponential time growth, it often taking much more longer than BVH-accelerated renders. For example, when we are rendering CBgems with 800 triangles required minutes without BVH, while the same scene rendered in seconds with BVH speed-up. 
+			This disparity arises because naive ray-object intersection checks scale linearly with scene complexity (O(N) per ray), while BVH traversal reduces this to logarithmic time (O(log N)) by hierarchically culling irrelevant geometry. I get these time information from the internet. It is useful to know they have such a difference.
+			Scenes with spatially clustered objects saw even greater gains, but BVH exploit spatial coherence to skip entire subtrees of geometry. 
+			Without BVH, shadow/reflection rays dominated runtime (90%+ of compute), whereas BVH shifted bottlenecks to shading/BSDF evaluations. BVH can save way more time in graphics.</p>
 			<h2>Part 3: Direct Illumination</h2>
 			Hemisphere Sampling uniformly samples directions in a local hemisphere around the intersection point, using the BSDF’s sample_f to generate random incoming directions.
 			For each sample, it transforms the direction to world space, casts a ray, and accumulates light contribution if the ray hits an emissive object, weighted by the BRDF, cosine term, and PDF.
