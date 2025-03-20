@@ -123,23 +123,91 @@
 					</tr>
 				</table>
 			</div>
-			<p>If we are rendering without BVH acceleration exhibited exponential time growth, it often taking much more longer than BVH-accelerated renders. For example, when we are rendering CBgems with 800 triangles required minutes without BVH, while the same scene rendered in seconds with BVH speed-up. 
-			This disparity arises because naive ray-object intersection checks scale linearly with scene complexity (O(N) per ray), while BVH traversal reduces this to logarithmic time (O(log N)) by hierarchically culling irrelevant geometry. I get these time information from the internet. It is useful to know they have such a difference.
-			Scenes with spatially clustered objects saw even greater gains, but BVH exploit spatial coherence to skip entire subtrees of geometry. 
-			Without BVH, shadow/reflection rays dominated runtime (90%+ of compute), whereas BVH shifted bottlenecks to shading/BSDF evaluations. BVH can save way more time in graphics.</p>
+			<p>
+				If we are rendering without BVH acceleration exhibited exponential time growth, it often taking much more longer than BVH-accelerated renders. For example, when we are rendering CBgems with 800 triangles required minutes without BVH, while the same scene rendered in seconds with BVH speed-up.
+				This disparity arises because naive ray-object intersection checks scale linearly with scene complexity (O(N) per ray), while BVH traversal reduces this to logarithmic time (O(log N)) by hierarchically culling irrelevant geometry. I get these time information from the internet. It is useful to know they have such a difference.
+				Scenes with spatially clustered objects saw even greater gains, but BVH exploit spatial coherence to skip entire subtrees of geometry.
+				Without BVH, shadow/reflection rays dominated runtime (90%+ of compute), whereas BVH shifted bottlenecks to shading/BSDF evaluations. BVH can save way more time in graphics.
+			</p>
 			<h2>Part 3: Direct Illumination</h2>
-			Hemisphere Sampling uniformly samples directions in a local hemisphere around the intersection point, using the BSDF’s sample_f to generate random incoming directions.
-			For each sample, it transforms the direction to world space, casts a ray, and accumulates light contribution if the ray hits an emissive object, weighted by the BRDF, cosine term, and PDF.
-			The hemisphere sampling implementation constructs a local coordinate system aligned with the surface normal, samples directions uniformly via the BSDF’s sample_f (returning local-space directions and PDFs), transforms them to world space, and casts rays to check for emissive intersections, accumulating light as \((BRDF * emission * cosθ) / (pdf * num_samples)\) with no explicit light targeting.
-
+			We have two different way to implement direct lighting estimation. The first is estimate_direct_lighting_hemisphere, where we estimate the direct lighting on a point by sampling uniformly in a hemisphere.
+			The second is estimate_direct_lighting_importance. We sample directions between the light source and the hit points. If we cast a ray in this direction and there is no other object between the hit point and the light source, then we know that this light source does cast light onto the hit point.
+			<p>
+				In Hemisphere lighting, we have constructed orthonormal basis matrices (o2w, w2o) using make_coord_space.
+				For each sample, call <code>isect.bsdf->sample_f(w_out, &w_in, &pdf)</code> to generate a random direction w_in in the local hemisphere, returning BRDF value and PDF.
+				It transforms the direction to world space, casts a ray, and accumulates light contribution if the ray hits an emissive object, weighted by the BRDF, cosine term, and PDF.
+				It will construct a local coordinate system aligned with the surface normal, samples directions uniformly via the BSDF’s sample_f (returning local-space directions and PDFs), transforms them to world space, and casts rays to check for emissive intersections, accumulating light as \((BRDF * emission * cosθ) / (pdf * num_samples)\) with no explicit light targeting.
+			</p>
 			<p>
 				Importance Sampling explicitly samples toward lights via sample_L, generating directions and PDFs from light sources.
 				It checks visibility by casting rays clamped to the light’s distance, then computes BRDF and accumulates contributions.
 				Importance sampling reduces noise by focusing samples on lights but requires correct coordinate handling and PDF weighting.
-				The importance sampling method iterates lights directly, samples world-space directions toward lights via sample_L (returning radiance, distance, and PDF), casts visibility rays clamped to the light’s distance, and accumulates \((BRDF * L * cosθ) / pdf \) but fails to transform w_in to local space before BRDF evaluation and calculates averages by dividing the total L_out by sample_num after per-light accumulation instead of averaging per-light contributions first.
-				Both methods offset rays by EPS_F to avoid self-intersection, but hemisphere sampling implicitly tests all emissive surfaces via random walks, while importance sampling explicitly queries lights but mishandles coordinate spaces and PDF weighting, introducing energy conservation errors.
+				The importance sampling method iterates lights directly, samples world-space directions toward lights via sample_L (returning radiance, distance, and PDF), casts visibility rays clamped to the light’s distance, and accumulates \((BRDF * L * cosθ) / pdf \).
+				It doesn't need a local coordinate system.
 			</p>
-
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="CBbunny_H_64_32.png" width="400px" />
+							<figcaption>CBunny with Hemisphere lighting.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="CBempty_H_64_32.png" width="400px" />
+							<figcaption>CBempty with Hemishpere lighting.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="bunny_64_32.png" width="400px" />
+							<figcaption>Bunny important sampling.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="dragon_64_32.png" width="400px" />
+							<figcaption>Dragon important sampling.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="bench_64_32.png" width="400px" />
+							<figcaption>Bench important sampling.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				One particular scene with at least one area light and compare the noise levels in soft shadows when rendering with 1, 4, 16, and 64 light rays.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="CBbunny_1_1.png" width="400px" />
+							<figcaption>CBunny -l 1.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="CBbunny_1_4.png" width="400px" />
+							<figcaption>CBunny -l 4.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="CBbunny_1_16.png" width="400px" />
+							<figcaption>CBunny -l 16.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="CBbunny_1_64.png" width="400px" />
+							<figcaption>CBunny -l 64.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Uniform hemisphere sampling scatters rays across all directions, wasting samples on dark regions and rarely hitting small area lights.
+				This results in persistent noise even at high sample counts, as most samples miss the light entirely.
+				In contrast, light sampling explicitly targets the light source, ensuring each sample contributes meaningfully to the direct lighting integral.
+				Light sampling achieves clean shadows, while hemisphere sampling remains grainy, requiring orders of magnitude more samples to converge. We can see this from images above(even they are not in comparsion).
+			</p>
 			<h2>Part 4: Global Illumination</h2>
 			The indirect lighting is handled in at_least_one_bounce_radiance, which recursively traces rays to simulate global illumination:
 			Russian Roulette Termination: A 35% probability (russian_roulette = 1 - 0.35) of terminating the ray early to control computation cost.
