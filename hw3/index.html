@@ -219,7 +219,7 @@
 					<tr>
 						<td style="text-align: center;">
 							<img src="CBbunny_1024_32.png" width="400px" />
-							<figcaption>CBunny 1024.</figcaption>
+							<figcaption>CBbunny 1024.</figcaption>
 						</td>
 						<td style="text-align: center;">
 							<img src="CBdragon_1024_32.png" width="400px" />
@@ -229,15 +229,57 @@
 					<tr>
 						<td style="text-align: center;">
 							<img src="CBCBspheres_1024_32.png" width="400px" />
-							<figcaption>CBunny -l 16.</figcaption>
+							<figcaption>CBspheres 1024.</figcaption>
 						</td>
 					</tr>
 				</table>
 			</div>
-
+			<p>
+				Here is compared rendered views first with only direct illumination, then only indirect illumination.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="CBbunny_1024_32.png" width="400px" />
+							<figcaption>CBbunny direct illumination.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="CBdragon_1024_32.png" width="400px" />
+							<figcaption>CBbunny indirect illumination.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 			<h2>Part 5: Adaptive Sampling</h2>
-
-
+			Adaptive Sampling dynamically allocates samples per pixel based on variance: for each pixel, the code tracks cumulative illuminance (s1) and squared illuminance (s2) across samples.
+			Every samplesPerBatch iterations, it computes the mean (mu) and standard deviation (sigma), then checks if the 95% confidence interval (I = 1.96 * sigma / sqrt(n)) falls below maxTolerance * mu; if so, sampling stops early.
+			This prioritizes more samples for noisy regions (e.g., soft shadows, complex geometry) and fewer for uniform areas.
+			Like CBspheres.dae and CBDragon.dae, rendering with -s 2048 -l 1 -m 5 produces sample rate images where bright/dark regions reflect high/low sample counts, alongside noise-free results—demonstrating efficiency (fewer samples in smooth areas) without sacrificing detail.
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="CBbuunny_2048.png" width="400px" />
+							<figcaption>Bunny.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="CBbunny_1024_rate.png" width="400px" />
+							<figcaption>Bunny's rate.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="CBdragon_2048.png" width="400px" />
+							<figcaption>Dragon.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="CBdragon_2048_rate.png" width="400px" />
+							<figcaption>Dragon's rate.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 			<h2>(Optional) Part 6: Extra Credit Opportunities</h2>
 
 
