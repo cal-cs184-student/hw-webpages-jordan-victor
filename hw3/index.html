@@ -461,7 +461,7 @@
                     </tr>
                 </table>
             </div>
-            And if we use SAH to build the BVH tree, we will have a way more better performance.
+            And if we use SAH to build the BVH tree, we will have a way more better performance. All these memory usages are from CBspheres.
             <div style="display: flex; flex-direction: column; align-items: center;">
                 <table style="width: 100%; text-align: center; border-collapse: collapse;">
                     <tr>
@@ -472,6 +472,36 @@
                     </tr>
                 </table>
             </div>
-        </div>
+            <p>
+                The SAH heuristic is a more sophisticated method for constructing BVH trees that balances the cost of traversal and intersection.
+                It partitions primitives along the axis and position that minimizes the expected cost of traversing the tree and intersecting with primitives.
+                The algorithm computes the cost of splitting at each position and axis, selecting the split with the lowest expected traversal and intersection cost.
+                This results in a more efficient BVH tree that minimizes the number of ray-primitive intersection tests and traversal steps, improving rendering performance.
+                We also contruct two functions for the SAH heuristic. The first is the while loop, and the second is the recursive way. I will show the images of the time difference.
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                    <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                        <tr>
+                            <td style="text-align: center;">
+                                <img src="recursion time for spheres.png" width="400px" />
+                                <figcaption>recursion time.</figcaption>
+                            </td>
+                            <td style="text-align: center;">
+                                <img src="recursion time for spheres.png" width="400px" />
+                                <figcaption>recursion memory.</figcaption>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <img src="whiloe time for spheres.png" width="400px" />
+                                <figcaption>while time.</figcaption>
+                            </td>
+                            <td style="text-align: center;">
+                                <img src="while memory for spheres.png" width="400px" />
+                                <figcaption>while memory.</figcaption>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+</div>
 </body>
 </html>
