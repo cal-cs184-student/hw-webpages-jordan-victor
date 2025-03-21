@@ -326,11 +326,11 @@
                 </table>
             </div>
             <p>
-                When rendering CBbunny.dae with isAccumBounces=false and varying max_ray_depth, the 2nd and 3rd bounces introduce critical indirect illumination effects absent in rasterization:
-                2nd: Captures first indirect light. This adds subtle color bleeding and softens shadows.
-                3rd: Adds secondary indirect contributions, further smoothing noise in shadowed regions and enhancing ambient occlusion.
-                Rasterization typically computes direct lighting only, relying on prebaked textures or screen-space approximations for indirect effects.
-                Path tracing’s 2nd/3rd bounces physically simulate multi-bounce light transport, producing accurate soft shadows, color bleeding, and ambient occlusion without artifacts like light leaks or overblown shadows.
+                When rendering CBbunny.dae with isAccumBounces=false and varying max_ray_depth, the 2nd and 3rd bounces have critical indirect illumination effects absent in rasterization:
+                2nd: Captures first indirect light. This adds subtle color bleeding and softens shadows. We can see in the graph that the color of the bunny is more realistic. The shadow down the bunny is more soft.
+                3rd: Adds secondary indirect contributions, further smoothing noise in shadowed regions and enhancing ambient occlusion. The shadow is more soft and the color of the bunny is more real. Even we don't have the direct light, we can still see the details of the bunny.
+                Rasterization typically computes direct lighting only and it will depends on prebaked textures or screen-space approximations for indirect effects.
+                Path tracing’s 2nd/3rd bounces physically simulate multi-bounce light transport, producing accurate soft shadows, color bleeding, and ambient occlusion.
                 For CBbunny.dae, this translates to lifelike interreflections and smoother transitions between light/shadow, unachievable with rasterization in real-time.
             </p>
             <p>
@@ -443,8 +443,35 @@
                 </table>
             </div>
             <h2>Part 6: Extra Credit Opportunities</h2>
-
-
+            For the extra credit, we implemented a better BVH to speed up and use the SAH heuristic to build the BVH tree.
+            So here we have three ways for the BVH tree: the first is what we write in part2 which we will modified, the second is the better BVH tree using the SAH with while loop, and the third is the SAH with the recursive way.
+            First we talk about how we modify the naive BVH tree to a more efficient one. We contruct a vector in BVH not creating a new one for the primitive. And we will sort it each time.
+            It will take a while to sort at the first time. But it will be faster after that. I will show the images of time difference.
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="naive_bvh.png" width="400px" />
+                            <figcaption>naive one, what we did in part2.</figcaption>
+                        </td>
+                        <td style="text-align: center;">
+                            <img src="modified_bvh.png" width="400px" />
+                            <figcaption>We recontructed bvh.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            And if we use SAH to build the BVH tree, we will have a way more better performance.
+            <div style="display: flex; flex-direction: column; align-items: center;">
+                <table style="width: 100%; text-align: center; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: center;">
+                            <img src="SAH_bvh.png" width="400px" />
+                            <figcaption>SAH_bvh.</figcaption>
+                        </td>
+                    </tr>
+                </table>
+            </div>
         </div>
 </body>
 </html>
