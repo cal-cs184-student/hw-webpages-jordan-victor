@@ -174,8 +174,56 @@
 
 			<h2>Part 3: Handling collisions with other objects</h2>
 			In part 3, we implemented the collision method.
-
-
+			<p>
+				For sphere, we will need to first computed the intersection point of point mass with
+				the sphere by extending its trajectory.Then we will compute correction vector
+				which should be applied to last_position to reach this point. At last, we set
+				position = last_position while taking into account of friction, scaling by
+				(1-f).
+			</p>
+			<p>
+				For plane, we have a similar approach, but when we compute the correction
+				vector, we have to make sure that the point mass¡¯s last_position should reach a
+				point which is slightly above the intersection point, on the same side of the
+				plane.
+			</p>
+			<p>
+				As the ks increases, the forces applied to the cloth do not affect it as much. But with lower ks, the foreces or the gravity will affect the cloth more.
+				The cloth will be more easily affected by the forces. So they drop more. But higher ks makes the cloth more stable and less affected by the forces.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="3.1500.png" width="400px" />
+							<figcaption>ks = 500</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="3.15k" width="400px" />
+							<figcaption>ks = 5k.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="3.150k.png" width="400px" />
+							<figcaption>ks = 50k.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				a screenshot of your shaded cloth lying peacefully at rest on the plane
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="3.2.png" width="400px" />
+							<figcaption>lying on the plane.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 			<h2>Part 4: Handling self-collisions</h2>
 
 
