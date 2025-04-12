@@ -178,12 +178,12 @@
 				For sphere, we will need to first computed the intersection point of point mass with
 				the sphere by extending its trajectory.Then we will compute correction vector
 				which should be applied to last_position to reach this point. At last, we set
-				position = last_position while taking into account of friction, scaling by
+				<code>position = last_position</code> while taking into account of friction, scaling by
 				(1-f).
 			</p>
 			<p>
 				For plane, we have a similar approach, but when we compute the correction
-				vector, we have to make sure that the point mass¡¯s last_position should reach a
+				vector, we have to make sure that the point mass¡¯s <code>last_position</code> should reach a
 				point which is slightly above the intersection point, on the same side of the
 				plane.
 			</p>
@@ -199,7 +199,7 @@
 							<figcaption>ks = 500</figcaption>
 						</td>
 						<td style="text-align: center;">
-							<img src="3.15k" width="400px" />
+							<img src="3.15k.png" width="400px" />
 							<figcaption>ks = 5k.</figcaption>
 						</td>
 					</tr>
@@ -212,7 +212,7 @@
 				</table>
 			</div>
 			<p>
-				a screenshot of your shaded cloth lying peacefully at rest on the plane
+				A screenshot of shaded cloth lying peacefully at rest on the plane
 			</p>
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
