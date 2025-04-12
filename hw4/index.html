@@ -52,7 +52,7 @@
 			Based on the system, we apply physical forces and numerical integration to
 			simulate the way cloth moves over time and handle various forms of
 			collision. Finally, we implemented various measures
-			Shaders, including diffuse shading, Blinn Phong shading, displacement, bump mapping, and environment mapping reflection. 
+			Shaders, including diffuse shading, Blinn Phong shading, displacement, bump mapping, and environment mapping reflection.
 			We will use the physics equations we learned in class to implement these.
 
 			<h2>Part 1: Masses and springs</h2>
@@ -89,20 +89,101 @@
 			</div>
 
 			<h2>Part 2: Simulation via numerical integration</h2>
-			
+			In part 2, we implemented the simulate function that applies forces on our
+			cloth's point masses.
+			<p>
+				Describe the effects of changing the spring constant ks; how does the
+				cloth behave from start to rest with a very low ks? A high ks?
+			</p>
+			<p>
+				With a low ks, the upper part of the cloth starts to sink and fold more or maybe shrink.
+				With a high ks, the upper part of the cloth is more straight and doesn't fold. This is because
+				a higher ks has a stiffer string, requiring more force to move it.
+				So the cloth with high ks is more stable and less likely yo fold.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="2.1k1.png" width="400px" />
+							<figcaption>lower ks.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="2.1k2.png" width="400px" />
+							<figcaption>higher ks.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				What about for density?
+			</p>
+			<p>
+				With a high density cloth, it seems to sink more. But a low density cloth does not sink and only has littlte folding effect.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="2.1d1.png" width="400px" />
+							<figcaption>lower density.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="2.1d2.png" width="400px" />
+							<figcaption>higher density.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				What about for damping?
+			</p>
+			<p>
+				When we modify the damping value, it has effects on the speed of the animation.
+				A lower damping value has faster animations. But a higher damping value has slower animations.
+				Damping results in a decay in motion and brings the system to an equilibrium. It is way more like the power of the cloth to resist the motion.
+				So it will result in a faster or slower animation.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="2.1da2.png" width="400px" />
+							<figcaption>0.2damping value.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="2.1da02.png" width="400px" />
+							<figcaption>0.02damping value.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Final state of the cloth
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="2.2final.png" width="400px" />
+							<figcaption>final state.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 
 			<h2>Part 3: Handling collisions with other objects</h2>
-			
+
 
 			<h2>Part 4: Handling self-collisions</h2>
-			
+
 
 			<h2>Part 5: Shaders</h2>
-			
 
-			
 
-			
+
+
+
 		</div>
 	</body>
 </html>
