@@ -1,4 +1,4 @@
-<html>
+﻿<html>
 	<head>
 		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.4/MathJax.js?config=default'></script>
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
@@ -183,7 +183,7 @@
 			</p>
 			<p>
 				For plane, we have a similar approach, but when we compute the correction
-				vector, we have to make sure that the point mass��s <code>last_position</code> should reach a
+				vector, we have to make sure that the point mass’s <code>last_position</code> should reach a
 				point which is slightly above the intersection point, on the same side of the
 				plane.
 			</p>
@@ -212,7 +212,7 @@
 				</table>
 			</div>
 			<p>
-			    A screenshot of shaded cloth lying peacefully at rest on the plane
+				A screenshot of shaded cloth lying peacefully at rest on the plane
 			</p>
 			<div style="display: flex; flex-direction: column; align-items: center;">
 				<table style="width: 100%; text-align: center; border-collapse: collapse;">
@@ -227,7 +227,99 @@
 			<h2>Part 4: Handling self-collisions</h2>
 			In part 4, we implement self-colision by implementing spatial hashing in the
 			`Cloth::hash_position`, `Cloth::build_spatial_map`, and `Cloth::self_collide` methods.
+			<p>
+				In <code>hash_position</code>, we partition the 3D space into uniformly sized boxes with dimensions
+				<strong>w × h × t</strong>, where:
+			</p>
 
+			<ul>
+				<li><strong>w</strong> = <code>3 * width / num_width_points</code></li>
+				<li><strong>h</strong> = <code>3 * height / num_height_points</code></li>
+				<li><strong>t</strong> = <code>max(w, h)</code></li>
+			</ul>
+
+			<p>
+				Using the transformed coordinates, we compute a unique numerical hash that corresponds to each 3D box.
+			</p>
+			<p>
+				In <code>build_spatial_map</code>, we iterate over all point masses and use the
+				<code>Cloth::hash_position</code> method to assign each point to its corresponding
+				spatial hash entry, constructing an efficient lookup structure for collision detection.
+			</p>
+
+			<h3>self_collide</h3>
+			<p>
+				In <code>self_collide</code>, we:
+			</p>
+			<ol>
+				<li>
+					Query the spatial hash table to identify neighboring point masses that could potentially
+					collide with the current point mass.
+				</li>
+				<li>
+					For each candidate pair within a distance of <code>2 * thickness</code>, compute a
+					correction vector to enforce minimum separation.
+				</li>
+				<li>
+					Average all applicable correction vectors for the point mass and scale the result by
+					<code>1 / simulation_steps</code> to ensure stable integration over multiple timesteps.
+				</li>
+			</ol>
+			<p>
+				3 screenshots that document how your cloth falls and folds on itself, starting with an early, initial self-collision and ending with the cloth at a more restful state
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="4.11.png" width="400px" />
+							<figcaption>first.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="4.12.png" width="400px" />
+							<figcaption>second.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="4.13.png" width="400px" />
+							<figcaption>third.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Vary the <code>density</code> and <code>ks</code>
+				and describe with words and screenshots how they affect the behavior of the cloth as it falls on itself.
+			</p>
+			<p>
+				A cloth with lower density does not easily fold onto itself as a cloth with higher density does. As ks increases, the amount of folds decreases. This is because a
+				higher ks means that the cloth is more stiff. For a cloth with a larger ks, it is more difficult for it to form folds.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="4.21.png" width="400px" />
+							<figcaption>d = 1.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="4.2100.png" width="400px" />
+							<figcaption>d = 100.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="4.3100.png" width="400px" />
+							<figcaption>ks = 100.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="4.3100k.png" width="400px" />
+							<figcaption>ks = 100k.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 			<h2>Part 5: Shaders</h2>
 
 
