@@ -321,11 +321,144 @@
 				</table>
 			</div>
 			<h2>Part 5: Shaders</h2>
-
-
-
-
-
+			In part 5, we implemented various shaders, including diffuse shading,
+			Blinn-Phong shading, displacement and bump mapping, and environment-mapped
+			reflections.
+			<p>
+				Explain in your own words what is a shader program and how vertex and
+				fragment shaders work together to create lighting and material
+				effects.
+			</p>
+			<p>
+				Shaders programmatically alter key stages of the rasterization pipeline to achieve lighting and material effects:
+				vertex shaders first transform geometry by processing vertex positions and normals during triangle setup, while fragment shaders subsequently compute per-pixel color, shading, and lighting effects during rasterization.
+				By operating at different pipeline stages - with vertex shaders manipulating geometric properties and fragment shaders determining surface appearance - they collectively produce the final rendered image with realistic materials and illumination.
+			</p>
+			<p>
+				Explain the Blinn-Phong shading model in your own words. Show a
+				screenshot of your Blinn-Phong shader outputting only the ambient
+				component, a screen shot only outputting the diffuse component, a
+				screen shot only outputting the specular component, and one using the
+				entire Blinn-Phong model.
+			</p>
+			<p>
+				The Blinn-Phong shading model combines three key lighting components to create realistic material appearances: ambient, diffuse, and specular lighting.
+				The ambient component provides a base uniform illumination, giving objects a flat matte appearance. The diffuse component simulates Lambertian reflection, where light scatters uniformly across a surface based on its angle to the light source.
+				The specular component models the bright highlights that occur when light reflects directly off a surface, creating a shiny effect. By blending these components, Blinn-Phong shading effectively approximates how light interacts with different materials to produce convincing shading effects.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="5.1a.png" width="400px" />
+							<figcaption>only the ambient component.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="5.1d.png" width="400px" />
+							<figcaption>only the diffuse component.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="5.1s.png" width="400px" />
+							<figcaption>only the specular component.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="5.1p.png" width="400px" />
+							<figcaption>the entire Blinn-Phong model.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Custom image
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="custom.png" width="400px" />
+							<figcaption>custom image.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Both bump mapping and displacement mapping simulate surface details by altering normals to create bump illusions.
+				But they differ fundamentally: bump mapping solely perturbs normals for lighting tricks without changing geometry, making it fast but inaccurate at silhouettes.
+				Displacement mapping physically moves vertices via height maps and derives correct normals from the deformed mesh, achieving realistic depth at higher computational cost.
+				The former merely fakes surface detail through shading, whereas the latter actually modifies geometry for authentic bumps visible from all angles.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="5.2c.png" width="400px" />
+							<figcaption>bump on cloth.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="5.2s.png" width="400px" />
+							<figcaption>bump on sphere.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="5.2ss.png" width="400px" />
+							<figcaption>displacement on sphere.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="5.1p.png" width="400px" />
+							<figcaption>the entire Blinn-Phong model.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Bump mapping remains largely unaffected by mesh coarseness since it only manipulates surface normals without altering geometry. In contrast, displacement mapping's effectiveness heavily depends on mesh resolution: with high-resolution spheres, vertex displacement produces smooth, rounded surfaces with subtle bumps.
+				If we have low-resolution meshes result in angular, it has faceted appearances with pronounced sharp edges due to insufficient geometric detail for proper deformation.
+				This fundamental difference stems from displacement mapping's direct modification of vertex positions versus bump mapping's purely optical normal perturbation.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="5.3b16.png" width="400px" />
+							<figcaption>bump 16.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="5.3b128.png" width="400px" />
+							<figcaption>bump 128.</figcaption>
+						</td>
+					</tr>
+					<tr>
+						<td style="text-align: center;">
+							<img src="5.3d16.png" width="400px" />
+							<figcaption>displacement 16.</figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="5.3d128.png" width="400px" />
+							<figcaption>displacement 128.</figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<p>
+				Show a screenshot of your mirror shader on the cloth and on the sphere.
+			</p>
+			<div style="display: flex; flex-direction: column; align-items: center;">
+				<table style="width: 100%; text-align: center; border-collapse: collapse;">
+					<tr>
+						<td style="text-align: center;">
+							<img src="5.4c.png" width="400px" />
+							<figcaption></figcaption>
+						</td>
+						<td style="text-align: center;">
+							<img src="5.4s.png" width="400px" />
+							<figcaption></figcaption>
+						</td>
+					</tr>
+				</table>
+			</div>
 		</div>
 	</body>
 </html>
